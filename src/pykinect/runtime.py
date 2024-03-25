@@ -1,5 +1,5 @@
-from pykinect import PyKinectV2
-from pykinect.PyKinectV2 import *
+from pykinect import pykinect
+from pykinect.pykinect import *
 
 import ctypes
 import _ctypes
@@ -67,7 +67,7 @@ class PyKinectRuntime(object):
         self._audio_frame_lock = thread.allocate()
 
         # initialize sensor
-        self._sensor = ctypes.POINTER(PyKinectV2.IKinectSensor)()
+        self._sensor = ctypes.POINTER(pykinect.IKinectSensor)()
         hres = ctypes.windll.kinect20.GetDefaultKinectSensor(ctypes.byref(self._sensor))
         hres = self._sensor.Open()
 
@@ -361,17 +361,17 @@ class PyKinectRuntime(object):
         return self._mapper.MapCameraPointToDepthSpace(joint.Position)
 
     def body_joints_to_color_space(self, joints):
-        joint_points = numpy.ndarray((PyKinectV2.JointType_Count), dtype=numpy.object)
+        joint_points = numpy.ndarray((pykinect.JointType_Count), dtype=numpy.object)
 
-        for j in range(0, PyKinectV2.JointType_Count):
+        for j in range(0, pykinect.JointType_Count):
             joint_points[j] = self.body_joint_to_color_space(joints[j])
 
         return joint_points
 
     def body_joints_to_depth_space(self, joints):
-        joint_points = numpy.ndarray((PyKinectV2.JointType_Count), dtype=numpy.object)
+        joint_points = numpy.ndarray((pykinect.JointType_Count), dtype=numpy.object)
 
-        for j in range(0, PyKinectV2.JointType_Count):
+        for j in range(0, pykinect.JointType_Count):
             joint_points[j] = self.body_joint_to_depth_space(joints[j])
 
         return joint_points
@@ -379,7 +379,7 @@ class PyKinectRuntime(object):
     def kinect_frame_thread(self):
         while 1:
             wait = ctypes.windll.kernel32.WaitForMultipleObjects(
-                self._waitHandleCount, self._handles, False, PyKinectV2._INFINITE
+                self._waitHandleCount, self._handles, False, pykinect._INFINITE
             )
 
             if wait == 0:
@@ -416,7 +416,7 @@ class PyKinectRuntime(object):
                     colorFrame.CopyConvertedFrameDataToArray(
                         self._color_frame_data_capacity,
                         self._color_frame_data,
-                        PyKinectV2.ColorImageFormat_Bgra,
+                        pykinect.ColorImageFormat_Bgra,
                     )
                     self._last_color_frame_time = time.clock()
             except:
@@ -555,22 +555,22 @@ class KinectBody(object):
             self.hand_right_confidence = body.HandRightConfidence
             self.clipped_edges = body.ClippedEdges
 
-            joints = ctypes.POINTER(PyKinectV2._Joint)
-            joints_capacity = ctypes.c_uint(PyKinectV2.JointType_Count)
-            joints_data_type = PyKinectV2._Joint * joints_capacity.value
-            joints = ctypes.cast(joints_data_type(), ctypes.POINTER(PyKinectV2._Joint))
-            body.GetJoints(PyKinectV2.JointType_Count, joints)
+            joints = ctypes.POINTER(pykinect._Joint)
+            joints_capacity = ctypes.c_uint(pykinect.JointType_Count)
+            joints_data_type = pykinect._Joint * joints_capacity.value
+            joints = ctypes.cast(joints_data_type(), ctypes.POINTER(pykinect._Joint))
+            body.GetJoints(pykinect.JointType_Count, joints)
             self.joints = joints
 
-            joint_orientations = ctypes.POINTER(PyKinectV2._JointOrientation)
+            joint_orientations = ctypes.POINTER(pykinect._JointOrientation)
             joint_orientations_data_type = (
-                PyKinectV2._JointOrientation * joints_capacity.value
+                pykinect._JointOrientation * joints_capacity.value
             )
             joint_orientations = ctypes.cast(
                 joint_orientations_data_type(),
-                ctypes.POINTER(PyKinectV2._JointOrientation),
+                ctypes.POINTER(pykinect._JointOrientation),
             )
-            body.GetJointOrientations(PyKinectV2.JointType_Count, joint_orientations)
+            body.GetJointOrientations(pykinect.JointType_Count, joint_orientations)
             self.joint_orientations = joint_orientations
 
 
