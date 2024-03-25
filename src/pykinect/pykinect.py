@@ -1,54 +1,28 @@
-# -*- coding: mbcs -*-
-typelib_path = "c:\\Users\\vladkol\\Documents\\PyKinect2\\idl\\Kinect.tlb"
-_lcid = 0  # change this if required
-import ctypes
-import comtypes
-from ctypes import *
-from comtypes import *
-from comtypes import GUID
-from ctypes import HRESULT
-from comtypes import helpstring
-from comtypes import COMMETHOD
-from comtypes import dispid
+from ctypes import (
+    POINTER,
+    Structure,
+    WinDLL,
+    alignment,
+    c_bool,
+    c_float,
+    c_int,
+    c_longlong,
+    c_ubyte,
+    c_uint,
+    c_uint32,
+    c_ulong,
+    c_ulonglong,
+    c_ushort,
+    c_void_p,
+    c_wchar_p,
+    sizeof,
+)
+from ctypes.wintypes import FILETIME
 
-STRING = c_char_p
-INT_PTR = c_int
-from ctypes.wintypes import _LARGE_INTEGER
-from ctypes.wintypes import _ULARGE_INTEGER
-from ctypes.wintypes import _ULARGE_INTEGER
-from ctypes.wintypes import _FILETIME
-
-WSTRING = c_wchar_p
-
-from _ctypes import COMError
-
-comtypes.hresult.E_PENDING = 0x8000000A
-
-import numpy.distutils.system_info as sysinfo
+from comtypes import COMMETHOD, GUID, HRESULT, IUnknown
 
 
-class _event(object):
-    """class used for adding/removing/invoking a set of listener functions"""
-
-    __slots__ = ["handlers"]
-
-    def __init__(self):
-        self.handlers = []
-
-    def __iadd__(self, other):
-        self.handlers.append(other)
-        return self
-
-    def __isub__(self, other):
-        self.handlers.remove(other)
-        return self
-
-    def fire(self, *args):
-        for handler in self.handlers:
-            handler(*args)
-
-
-class IBody(comtypes.IUnknown):
+class IBody(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{46AEF731-98B0-4D18-827B-933758678F4A}")
     _idlflags_ = []
@@ -272,7 +246,7 @@ IBody._methods_ = [
 ##
 
 
-class IColorCameraSettings(comtypes.IUnknown):
+class IColorCameraSettings(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{DBF802AB-0ADF-485A-A844-CF1C7956D039}")
     _idlflags_ = []
@@ -323,25 +297,25 @@ IColorCameraSettings._methods_ = [
 ##
 
 
-class IAudioBeamFrameReader(comtypes.IUnknown):
+class IAudioBeamFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{B5733DE9-6ECF-46B2-8B23-A16D71F1A75C}")
     _idlflags_ = []
 
 
-class IAudioBeamFrameArrivedEventArgs(comtypes.IUnknown):
+class IAudioBeamFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{E0DBE62D-2045-4571-8D1D-ECF3981E3C3D}")
     _idlflags_ = []
 
 
-class IAudioBeamFrameList(comtypes.IUnknown):
+class IAudioBeamFrameList(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{5393C8B9-C044-49CB-BDD6-23DFFFD7427E}")
     _idlflags_ = []
 
 
-class IAudioSource(comtypes.IUnknown):
+class IAudioSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{52D1D743-AED1-4E61-8AF8-19EF287A662C}")
     _idlflags_ = []
@@ -352,16 +326,16 @@ IAudioBeamFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IAudioBeamFrameArrivedEventArgs)),
@@ -425,19 +399,19 @@ IAudioBeamFrameReader._methods_ = [
 ##
 
 
-class IDepthFrame(comtypes.IUnknown):
+class IDepthFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{D8600853-8835-44F9-84A7-E617CDD7DFDD}")
     _idlflags_ = []
 
 
-class IFrameDescription(comtypes.IUnknown):
+class IFrameDescription(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{21F6EFB7-EB6D-48F4-9C08-181A87BF0C98}")
     _idlflags_ = []
 
 
-class IDepthFrameSource(comtypes.IUnknown):
+class IDepthFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{C428D558-5E46-490A-B699-D1DDDAA24150}")
     _idlflags_ = []
@@ -527,13 +501,13 @@ IDepthFrame._methods_ = [
 ##
 
 
-class IDepthFrameArrivedEventArgs(comtypes.IUnknown):
+class IDepthFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{2B01BCB8-29D7-4726-860C-6DA56664AA81}")
     _idlflags_ = []
 
 
-class IDepthFrameReference(comtypes.IUnknown):
+class IDepthFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{20621E5E-ABC9-4EBD-A7EE-4C77EDD0152A}")
     _idlflags_ = []
@@ -561,19 +535,19 @@ IDepthFrameArrivedEventArgs._methods_ = [
 ##
 
 
-class IColorFrameSource(comtypes.IUnknown):
+class IColorFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{57621D82-D8EE-4783-B412-F7E019C96CFD}")
     _idlflags_ = []
 
 
-class IFrameCapturedEventArgs(comtypes.IUnknown):
+class IFrameCapturedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{24CBAB8E-DF1A-4FA8-827E-C1B27A44A3A1}")
     _idlflags_ = []
 
 
-class IColorFrameReader(comtypes.IUnknown):
+class IColorFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{9BEA498C-C59C-4653-AAF9-D884BAB7C35B}")
     _idlflags_ = []
@@ -589,7 +563,7 @@ ColorImageFormat_Yuy2 = 5
 _ColorImageFormat = c_int  # enum
 
 
-class IKinectSensor(comtypes.IUnknown):
+class IKinectSensor(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{3C6EBA94-0DE1-4360-B6D4-653A10794C8B}")
     _idlflags_ = []
@@ -600,16 +574,16 @@ IColorFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -721,7 +695,7 @@ KinectCapabilities_Gamechat = 16
 _KinectCapabilities = c_int  # enum
 
 
-class IAudioBeamFrameReference(comtypes.IUnknown):
+class IAudioBeamFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{1BD29D0E-6304-4AFB-9C85-77CFE3DC4FCE}")
     _idlflags_ = []
@@ -749,25 +723,25 @@ IAudioBeamFrameArrivedEventArgs._methods_ = [
 ##
 
 
-class ILongExposureInfraredFrameReader(comtypes.IUnknown):
+class ILongExposureInfraredFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{2AF23594-0115-417B-859F-A0E3FFB690D2}")
     _idlflags_ = []
 
 
-class ILongExposureInfraredFrameArrivedEventArgs(comtypes.IUnknown):
+class ILongExposureInfraredFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{D73D4B5E-E329-4F04-894C-0C97482690D4}")
     _idlflags_ = []
 
 
-class ILongExposureInfraredFrame(comtypes.IUnknown):
+class ILongExposureInfraredFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{D1199394-9A42-4577-BE12-90A38B72282C}")
     _idlflags_ = []
 
 
-class ILongExposureInfraredFrameSource(comtypes.IUnknown):
+class ILongExposureInfraredFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{D7150EDA-EDA2-4673-B4F8-E3C76D1F402B}")
     _idlflags_ = []
@@ -778,16 +752,16 @@ ILongExposureInfraredFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(ILongExposureInfraredFrameArrivedEventArgs)),
@@ -908,13 +882,13 @@ IFrameCapturedEventArgs._methods_ = [
 ##
 
 
-class IKinectSensorCollection(comtypes.IUnknown):
+class IKinectSensorCollection(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{EF1FE50F-641C-4FB8-B7BA-C2A8295E1C74}")
     _idlflags_ = []
 
 
-class IEnumKinectSensor(comtypes.IUnknown):
+class IEnumKinectSensor(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{E7DEB409-8F82-4D72-9F91-2BB1D2025DC4}")
     _idlflags_ = []
@@ -969,7 +943,7 @@ IAudioBeamFrameReference._methods_ = [
 ##
 
 
-class ILongExposureInfraredFrameReference(comtypes.IUnknown):
+class ILongExposureInfraredFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{10043A3E-0DAA-409C-9944-A6FC66C85AF7}")
     _idlflags_ = []
@@ -997,13 +971,13 @@ ILongExposureInfraredFrameArrivedEventArgs._methods_ = [
 ##
 
 
-class IBodyFrameSource(comtypes.IUnknown):
+class IBodyFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{BB94A78A-458C-4608-AC69-34FEAD1E3BAE}")
     _idlflags_ = []
 
 
-class IBodyFrameReader(comtypes.IUnknown):
+class IBodyFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{45532DF5-A63C-418F-A39F-C567936BC051}")
     _idlflags_ = []
@@ -1014,16 +988,16 @@ IBodyFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1103,7 +1077,7 @@ IBodyFrameSource._methods_ = [
 ##
 
 
-class IAudioBeamFrame(comtypes.IUnknown):
+class IAudioBeamFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{07AADCC8-EC4A-42F8-90A9-C72ECF0A1D06}")
     _idlflags_ = []
@@ -1141,13 +1115,13 @@ Appearance_Count = 1
 _Appearance = c_int  # enum
 
 
-class IColorFrameArrivedEventArgs(comtypes.IUnknown):
+class IColorFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{82A2E32F-4AE5-4614-88BB-DCC5AE0CEAED}")
     _idlflags_ = []
 
 
-class IColorFrame(comtypes.IUnknown):
+class IColorFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{39D05803-8803-4E86-AD9F-13F6954E4ACA}")
     _idlflags_ = []
@@ -1158,16 +1132,16 @@ IColorFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IColorFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1260,7 +1234,7 @@ ILongExposureInfraredFrameReference._methods_ = [
 ##
 
 
-class IDepthFrameReader(comtypes.IUnknown):
+class IDepthFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{81C0C0AB-6E6C-45CB-8625-A5F4D38759A4}")
     _idlflags_ = []
@@ -1271,16 +1245,16 @@ IDepthFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1366,13 +1340,13 @@ IDepthFrameSource._methods_ = [
 ##
 
 
-class IAudioBeam(comtypes.IUnknown):
+class IAudioBeam(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{F692D23A-14D0-432D-B802-DD381A45A121}")
     _idlflags_ = []
 
 
-class IAudioBeamSubFrame(comtypes.IUnknown):
+class IAudioBeamSubFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{0967DB97-80D1-4BC5-BD2B-4685098D9795}")
     _idlflags_ = []
@@ -1481,13 +1455,13 @@ JointType_Count = 25
 _JointType = c_int  # enum
 
 
-class IBodyFrameArrivedEventArgs(comtypes.IUnknown):
+class IBodyFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{BF5CCA0E-00C1-4D48-837F-AB921E6AEE01}")
     _idlflags_ = []
 
 
-class IBodyFrame(comtypes.IUnknown):
+class IBodyFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{52884F1F-94D7-4B57-BF87-9226950980D5}")
     _idlflags_ = []
@@ -1498,16 +1472,16 @@ IBodyFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IBodyFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1563,7 +1537,7 @@ IBodyFrameReader._methods_ = [
 ##
 
 
-class IColorFrameReference(comtypes.IUnknown):
+class IColorFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{5CC49E38-9BBD-48BE-A770-FD30EA405247}")
     _idlflags_ = []
@@ -1656,7 +1630,7 @@ ILongExposureInfraredFrame._methods_ = [
 ##
 
 
-class IAudioBeamList(comtypes.IUnknown):
+class IAudioBeamList(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{3C792C7B-7D95-4C56-9DC7-EF63955781EA}")
     _idlflags_ = []
@@ -1667,16 +1641,16 @@ IAudioSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1802,25 +1776,25 @@ assert sizeof(_Vector4) == 16, sizeof(_Vector4)
 assert alignment(_Vector4) == 4, alignment(_Vector4)
 
 
-class IBodyIndexFrameReader(comtypes.IUnknown):
+class IBodyIndexFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{E9724AA1-EBFA-48F8-9044-E0BE33383B8B}")
     _idlflags_ = []
 
 
-class IBodyIndexFrameArrivedEventArgs(comtypes.IUnknown):
+class IBodyIndexFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{10B7E92E-B4F2-4A36-A459-06B2A4B249DF}")
     _idlflags_ = []
 
 
-class IBodyIndexFrame(comtypes.IUnknown):
+class IBodyIndexFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{2CEA0C07-F90C-44DF-A18C-F4D18075EA6B}")
     _idlflags_ = []
 
 
-class IBodyIndexFrameSource(comtypes.IUnknown):
+class IBodyIndexFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{010F2A40-DC58-44A5-8E57-329A583FEC08}")
     _idlflags_ = []
@@ -1831,16 +1805,16 @@ IBodyIndexFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IBodyIndexFrameArrivedEventArgs)),
@@ -1910,7 +1884,7 @@ AudioBeamMode_Manual = 1
 _AudioBeamMode = c_int  # enum
 
 
-class ISequentialStream(comtypes.IUnknown):
+class ISequentialStream(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{0C733A30-2A1C-11CE-ADE5-00AA0044773D}")
     _idlflags_ = []
@@ -2002,7 +1976,7 @@ IAudioBeam._methods_ = [
 ##
 
 
-class IBodyFrameReference(comtypes.IUnknown):
+class IBodyFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{C3A1733C-5F84-443B-9659-2F2BE250C97D}")
     _idlflags_ = []
@@ -2061,16 +2035,16 @@ IDepthFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IDepthFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -2130,16 +2104,16 @@ IBodyIndexFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -2230,7 +2204,7 @@ IBodyFrameReference._methods_ = [
 ##
 
 
-class IBodyIndexFrameReference(comtypes.IUnknown):
+class IBodyIndexFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{D0EA0519-F7E7-4B1E-B3D8-03B3C002795F}")
     _idlflags_ = []
@@ -2517,19 +2491,19 @@ IStream._methods_ = [
         [],
         HRESULT,
         "RemoteSeek",
-        (["in"], _LARGE_INTEGER, "dlibMove"),
+        (["in"], c_longlong, "dlibMove"),
         (["in"], c_ulong, "dwOrigin"),
-        ([], POINTER(_ULARGE_INTEGER), "plibNewPosition"),
+        ([], POINTER(c_ulonglong), "plibNewPosition"),
     ),
-    COMMETHOD([], HRESULT, "SetSize", (["in"], _ULARGE_INTEGER, "libNewSize")),
+    COMMETHOD([], HRESULT, "SetSize", (["in"], c_ulonglong, "libNewSize")),
     COMMETHOD(
         [],
         HRESULT,
         "RemoteCopyTo",
         (["in"], POINTER(IStream), "pstm"),
-        (["in"], _ULARGE_INTEGER, "cb"),
-        ([], POINTER(_ULARGE_INTEGER), "pcbRead"),
-        ([], POINTER(_ULARGE_INTEGER), "pcbWritten"),
+        (["in"], c_ulonglong, "cb"),
+        ([], POINTER(c_ulonglong), "pcbRead"),
+        ([], POINTER(c_ulonglong), "pcbWritten"),
     ),
     COMMETHOD([], HRESULT, "Commit", (["in"], c_ulong, "grfCommitFlags")),
     COMMETHOD([], HRESULT, "Revert"),
@@ -2537,16 +2511,16 @@ IStream._methods_ = [
         [],
         HRESULT,
         "LockRegion",
-        (["in"], _ULARGE_INTEGER, "libOffset"),
-        (["in"], _ULARGE_INTEGER, "cb"),
+        (["in"], c_ulonglong, "libOffset"),
+        (["in"], c_ulonglong, "cb"),
         (["in"], c_ulong, "dwLockType"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnlockRegion",
-        (["in"], _ULARGE_INTEGER, "libOffset"),
-        (["in"], _ULARGE_INTEGER, "cb"),
+        (["in"], c_ulonglong, "libOffset"),
+        (["in"], c_ulonglong, "cb"),
         (["in"], c_ulong, "dwLockType"),
     ),
     COMMETHOD(
@@ -2743,13 +2717,13 @@ assert sizeof(_RectF) == 16, sizeof(_RectF)
 assert alignment(_RectF) == 4, alignment(_RectF)
 
 
-class IMultiSourceFrameArrivedEventArgs(comtypes.IUnknown):
+class IMultiSourceFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{3532F40B-D908-451D-BBF4-6CA73B782558}")
     _idlflags_ = []
 
 
-class IMultiSourceFrameReference(comtypes.IUnknown):
+class IMultiSourceFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{DD70E845-E283-4DD1-8DAF-FC259AC5F9E3}")
     _idlflags_ = []
@@ -2791,7 +2765,7 @@ assert sizeof(_JointOrientation) == 20, sizeof(_JointOrientation)
 assert alignment(_JointOrientation) == 4, alignment(_JointOrientation)
 
 
-class IMultiSourceFrame(comtypes.IUnknown):
+class IMultiSourceFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{29A63AFB-76CE-4359-895A-997F1E094D1C}")
     _idlflags_ = []
@@ -2818,16 +2792,16 @@ ILongExposureInfraredFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -2895,7 +2869,7 @@ ILongExposureInfraredFrameSource._methods_ = [
 ##
 
 
-class IInfraredFrameReference(comtypes.IUnknown):
+class IInfraredFrameReference(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{60183D5B-DED5-4D5C-AE59-64C7724FE5FE}")
     _idlflags_ = []
@@ -3015,13 +2989,13 @@ assert sizeof(_CameraIntrinsics) == 28, sizeof(_CameraIntrinsics)
 assert alignment(_CameraIntrinsics) == 4, alignment(_CameraIntrinsics)
 
 
-class ICoordinateMapper(comtypes.IUnknown):
+class ICoordinateMapper(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{8784DF2D-16B0-481C-A11E-55E70BF25018}")
     _idlflags_ = []
 
 
-class ICoordinateMappingChangedEventArgs(comtypes.IUnknown):
+class ICoordinateMappingChangedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{E9A2A0BF-13BD-4A53-A157-91FC8BB41F85}")
     _idlflags_ = []
@@ -3032,19 +3006,19 @@ ICoordinateMapper._methods_ = [
         [],
         HRESULT,
         "SubscribeCoordinateMappingChanged",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeCoordinateMappingChanged",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetCoordinateMappingChangedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(ICoordinateMappingChangedEventArgs)),
@@ -3244,21 +3218,21 @@ ICoordinateMapper._methods_ = [
 ##
 
 tagSTATSTG._fields_ = [
-    ("pwcsName", WSTRING),
+    ("pwcsName", c_wchar_p),
     ("type", c_ulong),
-    ("cbSize", _ULARGE_INTEGER),
-    ("mtime", _FILETIME),
-    ("ctime", _FILETIME),
-    ("atime", _FILETIME),
+    ("cbSize", c_ulonglong),
+    ("mtime", FILETIME),
+    ("ctime", FILETIME),
+    ("atime", FILETIME),
     ("grfMode", c_ulong),
     ("grfLocksSupported", c_ulong),
     ("clsid", GUID),
     ("grfStateBits", c_ulong),
     ("reserved", c_ulong),
 ]
-required_size = 64 + sysinfo.platform_bits / 4
 
-assert sizeof(tagSTATSTG) == required_size, sizeof(tagSTATSTG)
+# assert sizeof(tagSTATSTG) == required_size, sizeof(tagSTATSTG)
+
 assert alignment(tagSTATSTG) == 8, alignment(tagSTATSTG)
 IAudioBeamList._methods_ = [
     COMMETHOD(
@@ -3286,25 +3260,25 @@ IAudioBeamList._methods_ = [
 ##
 
 
-class IInfraredFrameReader(comtypes.IUnknown):
+class IInfraredFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{059A049D-A0AC-481E-B342-483EE94A028B}")
     _idlflags_ = []
 
 
-class IInfraredFrameArrivedEventArgs(comtypes.IUnknown):
+class IInfraredFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{7E17F78E-D9D1-4448-90C2-4E50EC4ECEE9}")
     _idlflags_ = []
 
 
-class IInfraredFrame(comtypes.IUnknown):
+class IInfraredFrame(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{EA83823C-7613-4F29-BD51-4A9678A52C7E}")
     _idlflags_ = []
 
 
-class IInfraredFrameSource(comtypes.IUnknown):
+class IInfraredFrameSource(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{4C299EC6-CA45-4AFF-87AD-DF5762C49BE7}")
     _idlflags_ = []
@@ -3315,16 +3289,16 @@ IInfraredFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IInfraredFrameArrivedEventArgs)),
@@ -3392,16 +3366,16 @@ IInfraredFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -3486,7 +3460,7 @@ IInfraredFrameArrivedEventArgs._methods_ = [
 ##
 
 
-class IAudioBodyCorrelation(comtypes.IUnknown):
+class IAudioBodyCorrelation(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{C5BA2355-07DB-47C3-ABC4-68D24B91DE61}")
     _idlflags_ = []
@@ -3712,13 +3686,13 @@ IInfraredFrameReference._methods_ = [
 ##
 
 
-class IIsAvailableChangedEventArgs(comtypes.IUnknown):
+class IIsAvailableChangedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{3A6DD52E-967F-4982-B3D9-74B9E1A044C9}")
     _idlflags_ = []
 
 
-class IMultiSourceFrameReader(comtypes.IUnknown):
+class IMultiSourceFrameReader(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{C0F6432B-9FFE-4AB3-A683-F37C72BBB158}")
     _idlflags_ = []
@@ -3729,19 +3703,19 @@ IKinectSensor._methods_ = [
         [],
         HRESULT,
         "SubscribeIsAvailableChanged",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeIsAvailableChanged",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetIsAvailableChangedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IIsAvailableChangedEventArgs)),
@@ -4019,19 +3993,19 @@ IMultiSourceFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeMultiSourceFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        (["retval", "out"], POINTER(c_int), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeMultiSourceFrameArrived",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetMultiSourceFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
+        (["in"], c_int, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IMultiSourceFrameArrivedEventArgs)),
@@ -4185,7 +4159,7 @@ __all__ = [
     "JointType_HandTipLeft",
     "JointType_AnkleLeft",
     "_Joint",
-    "INT_PTR",
+    "c_int",
     "Activity_LookingAway",
     "IInfraredFrameSource",
     "_RectF",
@@ -4286,63 +4260,64 @@ __all__ = [
     "ColorImageFormat_Yuy2",
     "_Activity",
 ]
-from comtypes import _check_version
-
-_check_version("")
-
 
 KINECT_SKELETON_COUNT = 6
 
 
 class DefaultKinectSensor:
-    _kinect20 = ctypes.WinDLL("Kinect20")
+    _kinect20 = WinDLL("Kinect20")
     _GetDefaultKinectSensorProto = _kinect20.GetDefaultKinectSensor
-    _GetDefaultKinectSensorProto.argtypes = [
-        ctypes.POINTER(ctypes.POINTER(IKinectSensor))
-    ]
-    _GetDefaultKinectSensorProto.restype = ctypes.HRESULT
+    _GetDefaultKinectSensorProto.argtypes = [POINTER(POINTER(IKinectSensor))]
+    _GetDefaultKinectSensorProto.restype = HRESULT
 
 
-_kernel32 = ctypes.WinDLL("kernel32")
+_kernel32 = WinDLL("kernel32")
+
 _CreateEvent = _kernel32.CreateEventW
-_CreateEvent.argtypes = [ctypes.c_voidp, ctypes.c_uint, ctypes.c_bool, ctypes.c_wchar_p]
-_CreateEvent.restype = ctypes.c_voidp
+_CreateEvent.argtypes = [
+    c_void_p,
+    c_uint,
+    c_bool,
+    c_wchar_p,
+]
+_CreateEvent.restype = c_void_p
 
 _CloseHandle = _kernel32.CloseHandle
-_CloseHandle.argtypes = [ctypes.c_voidp]
+_CloseHandle.argtypes = [c_void_p]
 _CloseHandle.restype = c_bool
 
 _WaitForSingleObject = _kernel32.WaitForSingleObject
-_WaitForSingleObject.argtypes = [ctypes.c_voidp, ctypes.c_uint32]
-_WaitForSingleObject.restype = ctypes.c_uint32
+_WaitForSingleObject.argtypes = [c_void_p, c_uint32]
+_WaitForSingleObject.restype = c_uint32
 
 _WaitForMultipleObjects = _kernel32.WaitForMultipleObjects
 _WaitForMultipleObjects.argtypes = [
-    ctypes.c_uint32,
-    ctypes.POINTER(ctypes.c_voidp),
-    ctypes.c_uint,
-    ctypes.c_uint32,
+    c_uint32,
+    POINTER(c_void_p),
+    c_uint,
+    c_uint32,
 ]
-_WaitForMultipleObjects.restype = ctypes.c_uint32
+_WaitForMultipleObjects.restype = c_uint32
 
 _WAIT_OBJECT_0 = 0
 _WAIT_OBJECT_1 = 1
 _INFINITE = 0xFFFFFFFF
 
-_oleaut32 = ctypes.WinDLL("oleaut32")
+_oleaut32 = WinDLL("oleaut32")
+
 _SysFreeString = _oleaut32.SysFreeString
-_SysFreeString.argtypes = [ctypes.c_voidp]
-_SysFreeString.restype = ctypes.HRESULT
+_SysFreeString.argtypes = [c_void_p]
+_SysFreeString.restype = HRESULT
 
 
 def HRValue(hr):
-    _hr = comtypes.HRESULT(hr)
-    return ctypes.c_ulong(_hr.value).value
+    _hr = HRESULT(hr)
+    return c_ulong(_hr.value).value
 
 
 def IsHR(hr, value):
-    _hr = comtypes.HRESULT(hr)
-    return ctypes.c_ulong(_hr.value).value == value
+    _hr = HRESULT(hr)
+    return c_ulong(_hr.value).value == value
 
 
 __name__ = "PyKinectV2"
