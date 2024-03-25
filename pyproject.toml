@@ -1,5 +1,5 @@
 [project]
-name = "PyKinect"
+name = "pykinect-2024"
 version = "0.1.0"
 description = "Wrapper to expose Kinect for Windows v2 API in Python"
 authors = [
