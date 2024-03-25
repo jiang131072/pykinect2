@@ -1,0 +1,32 @@
+[project]
+name = "PyKinect"
+version = "0.1.0"
+description = "Wrapper to expose Kinect for Windows v2 API in Python"
+authors = [
+    { name = "Microsoft Corporation", email = "k4w@microsoft.com" },
+    { name = "Meson Jiang", email = "jiang131072@gmail.com" },
+]
+dependencies = [
+    "numpy>=1.26.4",
+    "comtypes>=1.3.1",
+    "pygame>=2.5.2",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Programming Language :: Python',
+]
+
+[project.urls]
+Repository = "https://github.com/jiang131072/PyKinect.git"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
