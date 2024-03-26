@@ -1,18 +1,8 @@
-from pykinect import pykinect
-from pykinect.pykinect import *
-from pykinect import runtime
-
 import ctypes
-import _ctypes
-import pygame
-import sys
+
 import numpy as np
-
-
-if sys.hexversion >= 0x03000000:
-    import _thread as thread
-else:
-    import thread
+import pygame
+from pykinect import runtime, wincom
 
 # colors for drawing different bodies
 SKELETON_COLORS = [
@@ -40,7 +30,7 @@ class InfraRedRuntime(object):
         self._clock = pygame.time.Clock()
 
         # Kinect runtime object, we want only color and body frames
-        self._kinect = runtime.PyKinectRuntime(pykinect.FrameSourceTypes_Infrared)
+        self._kinect = runtime.PyKinectRuntime(wincom.FrameSourceTypes_Infrared)
 
         # back buffer surface for getting Kinect infrared frames, 8bit grey, width and height equal to the Kinect color frame size
         self._frame_surface = pygame.Surface(
