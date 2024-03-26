@@ -16,12 +16,11 @@ readme = "README.md"
 license = { text = "MIT" }
 
 classifiers = [
-    'Development Status :: 4 - Beta',
-    'Programming Language :: Python',
+    "Development Status :: 2 - Pre-Alpha",
 ]
 
 [project.urls]
-Repository = "https://github.com/jiang131072/PyKinect.git"
+Homepage = "https://github.com/jiang131072/PyKinect"
 
 [build-system]
 requires = ["pdm-backend"]
@@ -30,3 +29,7 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.ruff.lint]
+ignore = ["E722"]
+

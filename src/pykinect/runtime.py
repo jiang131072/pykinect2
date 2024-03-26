@@ -1,20 +1,24 @@
-from pykinect import pykinect
-from pykinect.pykinect import *
-
+import _thread as thread
 import ctypes
-import _ctypes
-from _ctypes import COMError
-import comtypes
 import sys
-import numpy
 import time
 
-import importlib
+import numpy
 
-if sys.hexversion >= 0x03000000:
-    import _thread as thread
-else:
-    import thread
+from pykinect.wincom import (
+    _INFINITE,
+    ColorImageFormat_Bgra,
+    FrameSourceTypes_Body,
+    FrameSourceTypes_BodyIndex,
+    FrameSourceTypes_Color,
+    FrameSourceTypes_Depth,
+    FrameSourceTypes_Infrared,
+    IBody,
+    IKinectSensor,
+    JointType_Count,
+    _Joint,
+    _JointOrientation,
+)
 
 KINECT_MAX_BODY_COUNT = 6
 
@@ -58,25 +62,25 @@ class PyKinectRuntime(object):
         self._long_exposure_infrared_frame_arrived_event = 0
         self._audio_frame_arrived_event = 0
 
-        self._color_frame_lock = thread.allocate()
-        self._depth_frame_lock = thread.allocate()
-        self._body_frame_lock = thread.allocate()
-        self._body_index_frame_lock = thread.allocate()
-        self._infrared_frame_lock = thread.allocate()
-        self._long_exposure_infrared_frame_lock = thread.allocate()
-        self._audio_frame_lock = thread.allocate()
+        self._color_frame_lock = thread.allocate_lock()
+        self._depth_frame_lock = thread.allocate_lock()
+        self._body_frame_lock = thread.allocate_lock()
+        self._body_index_frame_lock = thread.allocate_lock()
+        self._infrared_frame_lock = thread.allocate_lock()
+        self._long_exposure_infrared_frame_lock = thread.allocate_lock()
+        self._audio_frame_lock = thread.allocate_lock()
 
         # initialize sensor
-        self._sensor = ctypes.POINTER(pykinect.IKinectSensor)()
-        hres = ctypes.windll.kinect20.GetDefaultKinectSensor(ctypes.byref(self._sensor))
-        hres = self._sensor.Open()
+        self._sensor = ctypes.POINTER(IKinectSensor)()
+        # hres = ctypes.windll.kinect20.GetDefaultKinectSensor(ctypes.byref(self._sensor))
+        # hres = self._sensor.Open()
 
         self._mapper = self._sensor.CoordinateMapper
 
         self.frame_source_types = frame_source_types
         self.max_body_count = KINECT_MAX_BODY_COUNT
 
-        self._handles = (ctypes.c_voidp * 8)()
+        self._handles = (ctypes.c_void_p * 8)()
         self._handles[0] = self._close_event
         self._handles[1] = self._close_event
         self._handles[2] = self._close_event
@@ -361,17 +365,17 @@ class PyKinectRuntime(object):
         return self._mapper.MapCameraPointToDepthSpace(joint.Position)
 
     def body_joints_to_color_space(self, joints):
-        joint_points = numpy.ndarray((pykinect.JointType_Count), dtype=numpy.object)
+        joint_points = numpy.ndarray((JointType_Count), dtype=numpy.object)
 
-        for j in range(0, pykinect.JointType_Count):
+        for j in range(0, JointType_Count):
             joint_points[j] = self.body_joint_to_color_space(joints[j])
 
         return joint_points
 
     def body_joints_to_depth_space(self, joints):
-        joint_points = numpy.ndarray((pykinect.JointType_Count), dtype=numpy.object)
+        joint_points = numpy.ndarray((JointType_Count), dtype=numpy.object)
 
-        for j in range(0, pykinect.JointType_Count):
+        for j in range(0, JointType_Count):
             joint_points[j] = self.body_joint_to_depth_space(joints[j])
 
         return joint_points
@@ -379,7 +383,7 @@ class PyKinectRuntime(object):
     def kinect_frame_thread(self):
         while 1:
             wait = ctypes.windll.kernel32.WaitForMultipleObjects(
-                self._waitHandleCount, self._handles, False, pykinect._INFINITE
+                self._waitHandleCount, self._handles, False, _INFINITE
             )
 
             if wait == 0:
@@ -416,7 +420,7 @@ class PyKinectRuntime(object):
                     colorFrame.CopyConvertedFrameDataToArray(
                         self._color_frame_data_capacity,
                         self._color_frame_data,
-                        pykinect.ColorImageFormat_Bgra,
+                        ColorImageFormat_Bgra,
                     )
                     self._last_color_frame_time = time.clock()
             except:
@@ -555,22 +559,20 @@ class KinectBody(object):
             self.hand_right_confidence = body.HandRightConfidence
             self.clipped_edges = body.ClippedEdges
 
-            joints = ctypes.POINTER(pykinect._Joint)
-            joints_capacity = ctypes.c_uint(pykinect.JointType_Count)
-            joints_data_type = pykinect._Joint * joints_capacity.value
-            joints = ctypes.cast(joints_data_type(), ctypes.POINTER(pykinect._Joint))
-            body.GetJoints(pykinect.JointType_Count, joints)
+            joints = ctypes.POINTER(_Joint)
+            joints_capacity = ctypes.c_uint(JointType_Count)
+            joints_data_type = _Joint * joints_capacity.value
+            joints = ctypes.cast(joints_data_type(), ctypes.POINTER(_Joint))
+            body.GetJoints(JointType_Count, joints)
             self.joints = joints
 
-            joint_orientations = ctypes.POINTER(pykinect._JointOrientation)
-            joint_orientations_data_type = (
-                pykinect._JointOrientation * joints_capacity.value
-            )
+            joint_orientations = ctypes.POINTER(_JointOrientation)
+            joint_orientations_data_type = _JointOrientation * joints_capacity.value
             joint_orientations = ctypes.cast(
                 joint_orientations_data_type(),
-                ctypes.POINTER(pykinect._JointOrientation),
+                ctypes.POINTER(_JointOrientation),
             )
-            body.GetJointOrientations(pykinect.JointType_Count, joint_orientations)
+            body.GetJointOrientations(JointType_Count, joint_orientations)
             self.joint_orientations = joint_orientations
 
 

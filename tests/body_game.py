@@ -1,5 +1,5 @@
-from pykinect import pykinect
-from pykinect.pykinect import *
+from pykinect import wincom
+from pykinect.wincom import *
 from pykinect import runtime
 
 import ctypes
