@@ -5,7 +5,7 @@ import time
 
 import numpy
 from _ctypes import COMError
-from pykinect.wincom import (
+from pykinect.com import (
     _INFINITE,
     ColorImageFormat_Bgra,
     FrameSourceTypes_Body,

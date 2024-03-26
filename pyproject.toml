@@ -1,6 +1,6 @@
 [project]
 name = "pykinect-2024"
-version = "0.1.0"
+version = "0.1.1"
 description = "Wrapper to expose Kinect for Windows v2 API in Python"
 authors = [
     { name = "Microsoft Corporation", email = "k4w@microsoft.com" },
@@ -16,7 +16,7 @@ readme = "README.md"
 license = { text = "MIT" }
 
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
 ]
 
 [project.urls]

@@ -28,12 +28,9 @@ from comtypes import (
     COMMETHOD,
     GUID,
     IUnknown,
-    _check_version,
     dispid,
     helpstring,
 )
-
-_check_version("")
 
 # TODO use ctypes.wintypes instead of defining these types
 STRING = c_char_p

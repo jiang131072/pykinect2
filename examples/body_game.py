@@ -3,7 +3,7 @@ import ctypes
 import pygame
 
 # from pykinect.wincom import *
-from pykinect import runtime, wincom
+from pykinect import com, runtime
 
 # colors for drawing different bodies
 SKELETON_COLORS = [
@@ -42,7 +42,7 @@ class BodyGameRuntime(object):
 
         # Kinect runtime object, we want only color and body frames
         self._kinect = runtime.PyKinectRuntime(
-            wincom.FrameSourceTypes_Color | wincom.FrameSourceTypes_Body
+            com.FrameSourceTypes_Color | com.FrameSourceTypes_Body
         )
 
         # back buffer surface for getting Kinect color frames, 32bit color, width and height equal to the Kinect color frame size
@@ -59,14 +59,14 @@ class BodyGameRuntime(object):
         joint0State = joints[joint0].TrackingState
         joint1State = joints[joint1].TrackingState
         # both joints are not tracked
-        if (joint0State == wincom.TrackingState_NotTracked) or (
-            joint1State == wincom.TrackingState_NotTracked
+        if (joint0State == com.TrackingState_NotTracked) or (
+            joint1State == com.TrackingState_NotTracked
         ):
             return
 
         # both joints are not *really* tracked
-        if (joint0State == wincom.TrackingState_Inferred) and (
-            joint1State == wincom.TrackingState_Inferred
+        if (joint0State == com.TrackingState_Inferred) and (
+            joint1State == com.TrackingState_Inferred
         ):
             return
 
@@ -85,173 +85,173 @@ class BodyGameRuntime(object):
             joints,
             jointPoints,
             color,
-            wincom.JointType_Head,
-            wincom.JointType_Neck,
+            com.JointType_Head,
+            com.JointType_Neck,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_Neck,
-            wincom.JointType_SpineShoulder,
+            com.JointType_Neck,
+            com.JointType_SpineShoulder,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineShoulder,
-            wincom.JointType_SpineMid,
+            com.JointType_SpineShoulder,
+            com.JointType_SpineMid,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineMid,
-            wincom.JointType_SpineBase,
+            com.JointType_SpineMid,
+            com.JointType_SpineBase,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineShoulder,
-            wincom.JointType_ShoulderRight,
+            com.JointType_SpineShoulder,
+            com.JointType_ShoulderRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineShoulder,
-            wincom.JointType_ShoulderLeft,
+            com.JointType_SpineShoulder,
+            com.JointType_ShoulderLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineBase,
-            wincom.JointType_HipRight,
+            com.JointType_SpineBase,
+            com.JointType_HipRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_SpineBase,
-            wincom.JointType_HipLeft,
+            com.JointType_SpineBase,
+            com.JointType_HipLeft,
         )
         # Right Arm
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_ShoulderRight,
-            wincom.JointType_ElbowRight,
+            com.JointType_ShoulderRight,
+            com.JointType_ElbowRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_ElbowRight,
-            wincom.JointType_WristRight,
+            com.JointType_ElbowRight,
+            com.JointType_WristRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_WristRight,
-            wincom.JointType_HandRight,
+            com.JointType_WristRight,
+            com.JointType_HandRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_HandRight,
-            wincom.JointType_HandTipRight,
+            com.JointType_HandRight,
+            com.JointType_HandTipRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_WristRight,
-            wincom.JointType_ThumbRight,
+            com.JointType_WristRight,
+            com.JointType_ThumbRight,
         )
         # Left Arm
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_ShoulderLeft,
-            wincom.JointType_ElbowLeft,
+            com.JointType_ShoulderLeft,
+            com.JointType_ElbowLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_ElbowLeft,
-            wincom.JointType_WristLeft,
+            com.JointType_ElbowLeft,
+            com.JointType_WristLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_WristLeft,
-            wincom.JointType_HandLeft,
+            com.JointType_WristLeft,
+            com.JointType_HandLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_HandLeft,
-            wincom.JointType_HandTipLeft,
+            com.JointType_HandLeft,
+            com.JointType_HandTipLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_WristLeft,
-            wincom.JointType_ThumbLeft,
+            com.JointType_WristLeft,
+            com.JointType_ThumbLeft,
         )
         # Right Leg
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_HipRight,
-            wincom.JointType_KneeRight,
+            com.JointType_HipRight,
+            com.JointType_KneeRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_KneeRight,
-            wincom.JointType_AnkleRight,
+            com.JointType_KneeRight,
+            com.JointType_AnkleRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_AnkleRight,
-            wincom.JointType_FootRight,
+            com.JointType_AnkleRight,
+            com.JointType_FootRight,
         )
         # Left Leg
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_HipLeft,
-            wincom.JointType_KneeLeft,
+            com.JointType_HipLeft,
+            com.JointType_KneeLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_KneeLeft,
-            wincom.JointType_AnkleLeft,
+            com.JointType_KneeLeft,
+            com.JointType_AnkleLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            wincom.JointType_AnkleLeft,
-            wincom.JointType_FootLeft,
+            com.JointType_AnkleLeft,
+            com.JointType_FootLeft,
         )
 
     def draw_color_frame(self, frame, target_surface):
