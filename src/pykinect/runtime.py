@@ -4,7 +4,7 @@ import sys
 import time
 
 import numpy
-
+from _ctypes import COMError
 from pykinect.wincom import (
     _INFINITE,
     ColorImageFormat_Bgra,
@@ -42,13 +42,13 @@ class PyKinectRuntime(object):
             ctypes.POINTER(self.Py_ssize_t),
         ]
 
-        # self._color_frame_ready = PyKinectV2._event()
-        # self._depth_frame_ready = PyKinectV2._event()
-        # self._body_frame_ready = PyKinectV2._event()
-        # self._body_index_frame_ready = PyKinectV2._event()
-        # self._infrared_frame_ready = PyKinectV2._event()
-        # self._long_exposure_infrared_frame_ready = PyKinectV2._event()
-        # self._audio_frame_ready = PyKinectV2._event()
+        # self._color_frame_ready = _event()
+        # self._depth_frame_ready = _event()
+        # self._body_frame_ready = _event()
+        # self._body_index_frame_ready = _event()
+        # self._infrared_frame_ready = _event()
+        # self._long_exposure_infrared_frame_ready = _event()
+        # self._audio_frame_ready = _event()
 
         self._close_event = ctypes.windll.kernel32.CreateEventW(
             None, False, False, None
@@ -72,8 +72,10 @@ class PyKinectRuntime(object):
 
         # initialize sensor
         self._sensor = ctypes.POINTER(IKinectSensor)()
-        # hres = ctypes.windll.kinect20.GetDefaultKinectSensor(ctypes.byref(self._sensor))
-        # hres = self._sensor.Open()
+
+        # TODO it seems that we get a hresult but not checked
+        hre = ctypes.windll.kinect20.GetDefaultKinectSensor(ctypes.byref(self._sensor))
+        hre = self._sensor.Open()
 
         self._mapper = self._sensor.CoordinateMapper
 

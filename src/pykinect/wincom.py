@@ -1,9 +1,12 @@
+# TODO use ctypes.wintypes instead of bare ctypes
 from ctypes import (
+    HRESULT,
     POINTER,
     Structure,
     WinDLL,
     alignment,
     c_bool,
+    c_char_p,
     c_float,
     c_int,
     c_longlong,
@@ -17,9 +20,48 @@ from ctypes import (
     c_wchar_p,
     sizeof,
 )
-from ctypes.wintypes import FILETIME
+from ctypes.wintypes import FILETIME, LARGE_INTEGER, ULARGE_INTEGER
 
-from comtypes import COMMETHOD, GUID, HRESULT, IUnknown
+# TODO clear unused imports
+from _ctypes import COMError
+from comtypes import (
+    COMMETHOD,
+    GUID,
+    IUnknown,
+    _check_version,
+    dispid,
+    helpstring,
+)
+
+_check_version("")
+
+# TODO use ctypes.wintypes instead of defining these types
+STRING = c_char_p
+WSTRING = c_wchar_p
+
+# TODO is this true for both win32 and win64?
+INT_PTR = c_int
+
+
+class _event(object):
+    """class used for adding/removing/invoking a set of listener functions"""
+
+    __slots__ = ["handlers"]
+
+    def __init__(self):
+        self.handlers = []
+
+    def __iadd__(self, other):
+        self.handlers.append(other)
+        return self
+
+    def __isub__(self, other):
+        self.handlers.remove(other)
+        return self
+
+    def fire(self, *args):
+        for handler in self.handlers:
+            handler(*args)
 
 
 class IBody(IUnknown):
@@ -326,16 +368,16 @@ IAudioBeamFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IAudioBeamFrameArrivedEventArgs)),
@@ -574,16 +616,16 @@ IColorFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -752,16 +794,16 @@ ILongExposureInfraredFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(ILongExposureInfraredFrameArrivedEventArgs)),
@@ -988,16 +1030,16 @@ IBodyFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1132,16 +1174,16 @@ IColorFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IColorFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1245,16 +1287,16 @@ IDepthFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1472,16 +1514,16 @@ IBodyFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IBodyFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1641,16 +1683,16 @@ IAudioSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -1805,16 +1847,16 @@ IBodyIndexFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IBodyIndexFrameArrivedEventArgs)),
@@ -2035,16 +2077,16 @@ IDepthFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IDepthFrameArrivedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -2104,16 +2146,16 @@ IBodyIndexFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -2491,19 +2533,19 @@ IStream._methods_ = [
         [],
         HRESULT,
         "RemoteSeek",
-        (["in"], c_longlong, "dlibMove"),
+        (["in"], LARGE_INTEGER, "dlibMove"),
         (["in"], c_ulong, "dwOrigin"),
-        ([], POINTER(c_ulonglong), "plibNewPosition"),
+        ([], POINTER(ULARGE_INTEGER), "plibNewPosition"),
     ),
-    COMMETHOD([], HRESULT, "SetSize", (["in"], c_ulonglong, "libNewSize")),
+    COMMETHOD([], HRESULT, "SetSize", (["in"], ULARGE_INTEGER, "libNewSize")),
     COMMETHOD(
         [],
         HRESULT,
         "RemoteCopyTo",
         (["in"], POINTER(IStream), "pstm"),
-        (["in"], c_ulonglong, "cb"),
-        ([], POINTER(c_ulonglong), "pcbRead"),
-        ([], POINTER(c_ulonglong), "pcbWritten"),
+        (["in"], ULARGE_INTEGER, "cb"),
+        ([], POINTER(ULARGE_INTEGER), "pcbRead"),
+        ([], POINTER(ULARGE_INTEGER), "pcbWritten"),
     ),
     COMMETHOD([], HRESULT, "Commit", (["in"], c_ulong, "grfCommitFlags")),
     COMMETHOD([], HRESULT, "Revert"),
@@ -2511,16 +2553,16 @@ IStream._methods_ = [
         [],
         HRESULT,
         "LockRegion",
-        (["in"], c_ulonglong, "libOffset"),
-        (["in"], c_ulonglong, "cb"),
+        (["in"], ULARGE_INTEGER, "libOffset"),
+        (["in"], ULARGE_INTEGER, "cb"),
         (["in"], c_ulong, "dwLockType"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnlockRegion",
-        (["in"], c_ulonglong, "libOffset"),
-        (["in"], c_ulonglong, "cb"),
+        (["in"], ULARGE_INTEGER, "libOffset"),
+        (["in"], ULARGE_INTEGER, "cb"),
         (["in"], c_ulong, "dwLockType"),
     ),
     COMMETHOD(
@@ -2792,16 +2834,16 @@ ILongExposureInfraredFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -3006,19 +3048,19 @@ ICoordinateMapper._methods_ = [
         [],
         HRESULT,
         "SubscribeCoordinateMappingChanged",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeCoordinateMappingChanged",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetCoordinateMappingChangedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(ICoordinateMappingChangedEventArgs)),
@@ -3218,9 +3260,9 @@ ICoordinateMapper._methods_ = [
 ##
 
 tagSTATSTG._fields_ = [
-    ("pwcsName", c_wchar_p),
+    ("pwcsName", WSTRING),
     ("type", c_ulong),
-    ("cbSize", c_ulonglong),
+    ("cbSize", ULARGE_INTEGER),
     ("mtime", FILETIME),
     ("ctime", FILETIME),
     ("atime", FILETIME),
@@ -3231,6 +3273,7 @@ tagSTATSTG._fields_ = [
     ("reserved", c_ulong),
 ]
 
+# required_size = 64 + sysinfo.platform_bits / 4
 # assert sizeof(tagSTATSTG) == required_size, sizeof(tagSTATSTG)
 
 assert alignment(tagSTATSTG) == 8, alignment(tagSTATSTG)
@@ -3289,16 +3332,16 @@ IInfraredFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IInfraredFrameArrivedEventArgs)),
@@ -3366,16 +3409,16 @@ IInfraredFrameSource._methods_ = [
         [],
         HRESULT,
         "SubscribeFrameCaptured",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], c_int, "waitableHandle")
+        [], HRESULT, "UnsubscribeFrameCaptured", (["in"], INT_PTR, "waitableHandle")
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetFrameCapturedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (["retval", "out"], POINTER(POINTER(IFrameCapturedEventArgs)), "eventData"),
     ),
     COMMETHOD(
@@ -3703,19 +3746,19 @@ IKinectSensor._methods_ = [
         [],
         HRESULT,
         "SubscribeIsAvailableChanged",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeIsAvailableChanged",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetIsAvailableChangedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IIsAvailableChangedEventArgs)),
@@ -3993,19 +4036,19 @@ IMultiSourceFrameReader._methods_ = [
         [],
         HRESULT,
         "SubscribeMultiSourceFrameArrived",
-        (["retval", "out"], POINTER(c_int), "waitableHandle"),
+        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "UnsubscribeMultiSourceFrameArrived",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
     ),
     COMMETHOD(
         [],
         HRESULT,
         "GetMultiSourceFrameArrivedEventData",
-        (["in"], c_int, "waitableHandle"),
+        (["in"], INT_PTR, "waitableHandle"),
         (
             ["retval", "out"],
             POINTER(POINTER(IMultiSourceFrameArrivedEventArgs)),
@@ -4159,7 +4202,7 @@ __all__ = [
     "JointType_HandTipLeft",
     "JointType_AnkleLeft",
     "_Joint",
-    "c_int",
+    "INT_PTR",
     "Activity_LookingAway",
     "IInfraredFrameSource",
     "_RectF",
@@ -4261,6 +4304,7 @@ __all__ = [
     "_Activity",
 ]
 
+
 KINECT_SKELETON_COUNT = 6
 
 
@@ -4272,14 +4316,8 @@ class DefaultKinectSensor:
 
 
 _kernel32 = WinDLL("kernel32")
-
 _CreateEvent = _kernel32.CreateEventW
-_CreateEvent.argtypes = [
-    c_void_p,
-    c_uint,
-    c_bool,
-    c_wchar_p,
-]
+_CreateEvent.argtypes = [c_void_p, c_uint, c_bool, c_wchar_p]
 _CreateEvent.restype = c_void_p
 
 _CloseHandle = _kernel32.CloseHandle
