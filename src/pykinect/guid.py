@@ -1,3 +1,0 @@
-from comtypes import GUID
-
-IBody = GUID("{46AEF731-98B0-4D18-827B-933758678F4A}")

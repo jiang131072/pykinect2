@@ -2,11 +2,10 @@ import _thread as thread
 import ctypes
 import sys
 import time
-from _ctypes import COMError
 
 import numpy
 
-from pykinect.api import (
+from .api import (
     _INFINITE,
     ColorImageFormat_Bgra,
     FrameSourceTypes_Body,

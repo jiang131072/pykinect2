@@ -1,4 +1,4 @@
-# pykinect-2024
+# pykinect2
 
 Enables writing Kinect applications, games, and experiences using Python.  Inspired by the original [PyKinect project on CodePlex](http://pytools.codeplex.com/wikipage?title=PyKinect).
 
@@ -49,10 +49,3 @@ easy_install -a c:\projects\downloads\PyKinect2
 After installation is complete, you can launch the interactive python shell and `import pykinect2` to ensure everything has been installed properly.
 
 Core helper classes for working with the Kinect sensor are located in PyKinectRuntime.py. For usage examples, please see /examples/PyKinectBodyGame.py.
-
-## TODO
-
-1. Migrate:
-  1. Enum
-  2. pywin32
-3. TBD
