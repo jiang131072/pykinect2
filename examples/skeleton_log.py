@@ -1,8 +1,9 @@
 import csv
 
 import pygame
-from pykinect import com, runtime
-from pykinect.com import *
+
+from pykinect import api, runtime
+from pykinect.api import *
 
 # 初始化Pygame
 pygame.init()
@@ -14,12 +15,12 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("PyKinect2 Body Tracking")
 
 # 创建Kinect实例
-kinect = runtime.PyKinectRuntime(com.FrameSourceTypes_Body)
+kinect = runtime.PyKinectRuntime(api.FrameSourceTypes_Body)
 
 # 创建CSV文件
 with open("tmp/skeleton_data.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
-    joint_ids = [joint_id for joint_id in range(0, com.JointType_Count)]
+    joint_ids = [joint_id for joint_id in range(0, api.JointType_Count)]
     header = (
         ["Frame"]
         + [f"Joint {joint_id+1} X" for joint_id in joint_ids]
@@ -65,7 +66,7 @@ with open("tmp/skeleton_data.csv", "w", newline="") as csvfile:
                 frame_data = []
 
                 # 存储关节坐标数据
-                for joint_id in range(0, com.JointType_Count):
+                for joint_id in range(0, api.JointType_Count):
                     joint = body.joints[joint_id]
                     frame_data.extend(
                         [joint.Position.x, joint.Position.y, joint.Position.z]
@@ -73,7 +74,7 @@ with open("tmp/skeleton_data.csv", "w", newline="") as csvfile:
 
                 # 调整关节坐标数据的排列顺序
                 rearranged_data = []
-                for joint_id in range(1, com.JointType_Count + 1):
+                for joint_id in range(1, api.JointType_Count + 1):
                     rearranged_data.extend(
                         frame_data[(joint_id - 1) * 3 : joint_id * 3]
                     )

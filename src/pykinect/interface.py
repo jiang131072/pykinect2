@@ -3,7 +3,6 @@ from ctypes import (
     HRESULT,
     POINTER,
     Structure,
-    WinDLL,
     alignment,
     c_bool,
     c_char_p,
@@ -12,25 +11,16 @@ from ctypes import (
     c_longlong,
     c_ubyte,
     c_uint,
-    c_uint32,
     c_ulong,
     c_ulonglong,
     c_ushort,
-    c_void_p,
     c_wchar_p,
     sizeof,
+    windll,
 )
 from ctypes.wintypes import FILETIME, LARGE_INTEGER, ULARGE_INTEGER
 
-# TODO clear unused imports
-from _ctypes import COMError
-from comtypes import (
-    COMMETHOD,
-    GUID,
-    IUnknown,
-    dispid,
-    helpstring,
-)
+from comtypes import COMMETHOD, GUID, IUnknown
 
 # TODO use ctypes.wintypes instead of defining these types
 STRING = c_char_p
@@ -38,27 +28,6 @@ WSTRING = c_wchar_p
 
 # TODO is this true for both win32 and win64?
 INT_PTR = c_int
-
-
-class _event(object):
-    """class used for adding/removing/invoking a set of listener functions"""
-
-    __slots__ = ["handlers"]
-
-    def __init__(self):
-        self.handlers = []
-
-    def __iadd__(self, other):
-        self.handlers.append(other)
-        return self
-
-    def __isub__(self, other):
-        self.handlers.remove(other)
-        return self
-
-    def fire(self, *args):
-        for handler in self.handlers:
-            handler(*args)
 
 
 class IBody(IUnknown):
@@ -205,6 +174,8 @@ IBody._methods_ = [
         (["retval", "out"], POINTER(_TrackingState), "TrackingState"),
     ),
 ]
+
+
 ################################################################
 ## code template for IBody implementation
 ##class IBody_Impl(object):
@@ -311,6 +282,8 @@ IColorCameraSettings._methods_ = [
         ["propget"], HRESULT, "Gamma", (["retval", "out"], POINTER(c_float), "Gamma")
     ),
 ]
+
+
 ################################################################
 ## code template for IColorCameraSettings implementation
 ##class IColorCameraSettings_Impl(object):
@@ -336,12 +309,6 @@ IColorCameraSettings._methods_ = [
 ##
 
 
-class IAudioBeamFrameReader(IUnknown):
-    _case_insensitive_ = True
-    _iid_ = GUID("{B5733DE9-6ECF-46B2-8B23-A16D71F1A75C}")
-    _idlflags_ = []
-
-
 class IAudioBeamFrameArrivedEventArgs(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{E0DBE62D-2045-4571-8D1D-ECF3981E3C3D}")
@@ -360,51 +327,6 @@ class IAudioSource(IUnknown):
     _idlflags_ = []
 
 
-IAudioBeamFrameReader._methods_ = [
-    COMMETHOD(
-        [],
-        HRESULT,
-        "SubscribeFrameArrived",
-        (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
-    ),
-    COMMETHOD(
-        [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
-    ),
-    COMMETHOD(
-        [],
-        HRESULT,
-        "GetFrameArrivedEventData",
-        (["in"], INT_PTR, "waitableHandle"),
-        (
-            ["retval", "out"],
-            POINTER(POINTER(IAudioBeamFrameArrivedEventArgs)),
-            "eventData",
-        ),
-    ),
-    COMMETHOD(
-        [],
-        HRESULT,
-        "AcquireLatestBeamFrames",
-        (
-            ["retval", "out"],
-            POINTER(POINTER(IAudioBeamFrameList)),
-            "audioBeamFrameList",
-        ),
-    ),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "IsPaused",
-        (["retval", "out"], POINTER(c_bool), "IsPaused"),
-    ),
-    COMMETHOD(["propput"], HRESULT, "IsPaused", ([], c_bool, "IsPaused")),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "AudioSource",
-        (["retval", "out"], POINTER(POINTER(IAudioSource)), "AudioSource"),
-    ),
-]
 ################################################################
 ## code template for IAudioBeamFrameReader implementation
 ##class IAudioBeamFrameReader_Impl(object):
@@ -436,6 +358,57 @@ IAudioBeamFrameReader._methods_ = [
 ##        '-no docstring-'
 ##        #return waitableHandle
 ##
+
+
+class IAudioBeamFrameReader(IUnknown):
+    _case_insensitive_ = True
+    _iid_ = GUID("{B5733DE9-6ECF-46B2-8B23-A16D71F1A75C}")
+    _idlflags_ = []
+    _methods_ = [
+        COMMETHOD(
+            [],
+            HRESULT,
+            "SubscribeFrameArrived",
+            (["retval", "out"], POINTER(INT_PTR), "waitableHandle"),
+        ),
+        COMMETHOD(
+            [], HRESULT, "UnsubscribeFrameArrived", (["in"], INT_PTR, "waitableHandle")
+        ),
+        COMMETHOD(
+            [],
+            HRESULT,
+            "GetFrameArrivedEventData",
+            (["in"], INT_PTR, "waitableHandle"),
+            (
+                ["retval", "out"],
+                POINTER(POINTER(IAudioBeamFrameArrivedEventArgs)),
+                "eventData",
+            ),
+        ),
+        COMMETHOD(
+            [],
+            HRESULT,
+            "AcquireLatestBeamFrames",
+            (
+                ["retval", "out"],
+                POINTER(POINTER(IAudioBeamFrameList)),
+                "audioBeamFrameList",
+            ),
+        ),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "IsPaused",
+            (["retval", "out"], POINTER(c_bool), "IsPaused"),
+        ),
+        COMMETHOD(["propput"], HRESULT, "IsPaused", ([], c_bool, "IsPaused")),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "AudioSource",
+            (["retval", "out"], POINTER(POINTER(IAudioSource)), "AudioSource"),
+        ),
+    ]
 
 
 class IDepthFrame(IUnknown):
@@ -470,7 +443,7 @@ IDepthFrame._methods_ = [
         "AccessUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ushort)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         ["propget"],
         HRESULT,
@@ -502,6 +475,8 @@ IDepthFrame._methods_ = [
         (["retval", "out"], POINTER(c_ushort), "DepthMaxReliableDistance"),
     ),
 ]
+
+
 ################################################################
 ## code template for IDepthFrame implementation
 ##class IDepthFrame_Impl(object):
@@ -564,6 +539,8 @@ IDepthFrameArrivedEventArgs._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for IDepthFrameArrivedEventArgs implementation
 ##class IDepthFrameArrivedEventArgs_Impl(object):
@@ -657,6 +634,8 @@ IColorFrameSource._methods_ = [
         (["retval", "out"], POINTER(POINTER(IKinectSensor)), "sensor"),
     ),
 ]
+
+
 ################################################################
 ## code template for IColorFrameSource implementation
 ##class IColorFrameSource_Impl(object):
@@ -752,6 +731,8 @@ IAudioBeamFrameArrivedEventArgs._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for IAudioBeamFrameArrivedEventArgs implementation
 ##class IAudioBeamFrameArrivedEventArgs_Impl(object):
@@ -901,6 +882,8 @@ IFrameCapturedEventArgs._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IFrameCapturedEventArgs implementation
 ##class IFrameCapturedEventArgs_Impl(object):
@@ -968,6 +951,8 @@ IAudioBeamFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IAudioBeamFrameReference implementation
 ##class IAudioBeamFrameReference_Impl(object):
@@ -1000,6 +985,8 @@ ILongExposureInfraredFrameArrivedEventArgs._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for ILongExposureInfraredFrameArrivedEventArgs implementation
 ##class ILongExposureInfraredFrameArrivedEventArgs_Impl(object):
@@ -1072,6 +1059,8 @@ IBodyFrameSource._methods_ = [
         ([], c_ulonglong, "newTrackingId"),
     ),
 ]
+
+
 ################################################################
 ## code template for IBodyFrameSource implementation
 ##class IBodyFrameSource_Impl(object):
@@ -1259,6 +1248,8 @@ ILongExposureInfraredFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for ILongExposureInfraredFrameReference implementation
 ##class ILongExposureInfraredFrameReference_Impl(object):
@@ -1333,6 +1324,8 @@ IDepthFrameSource._methods_ = [
         (["retval", "out"], POINTER(POINTER(IKinectSensor)), "sensor"),
     ),
 ]
+
+
 ################################################################
 ## code template for IDepthFrameSource implementation
 ##class IDepthFrameSource_Impl(object):
@@ -1383,6 +1376,49 @@ class IAudioBeam(IUnknown):
     _case_insensitive_ = True
     _iid_ = GUID("{F692D23A-14D0-432D-B802-DD381A45A121}")
     _idlflags_ = []
+
+    _methods_ = [
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "AudioSource",
+            (["retval", "out"], POINTER(POINTER(IAudioSource)), "AudioSource"),
+        ),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "AudioBeamMode",
+            (["retval", "out"], POINTER(_AudioBeamMode), "AudioBeamMode"),
+        ),
+        COMMETHOD(
+            ["propput"], HRESULT, "AudioBeamMode", ([], _AudioBeamMode, "AudioBeamMode")
+        ),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "BeamAngle",
+            (["retval", "out"], POINTER(c_float), "BeamAngle"),
+        ),
+        COMMETHOD(["propput"], HRESULT, "BeamAngle", ([], c_float, "BeamAngle")),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "BeamAngleConfidence",
+            (["retval", "out"], POINTER(c_float), "BeamAngleConfidence"),
+        ),
+        COMMETHOD(
+            [],
+            HRESULT,
+            "OpenInputStream",
+            (["retval", "out"], POINTER(POINTER(IStream)), "stream"),
+        ),
+        COMMETHOD(
+            ["propget"],
+            HRESULT,
+            "RelativeTime",
+            (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
+        ),
+    ]
 
 
 class IAudioBeamSubFrame(IUnknown):
@@ -1543,6 +1579,8 @@ IBodyFrameReader._methods_ = [
         (["retval", "out"], POINTER(POINTER(IBodyFrameSource)), "BodyFrameSource"),
     ),
 ]
+
+
 ################################################################
 ## code template for IBodyFrameReader implementation
 ##class IBodyFrameReader_Impl(object):
@@ -1617,7 +1655,7 @@ ILongExposureInfraredFrame._methods_ = [
         "AccessUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ushort)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         ["propget"],
         HRESULT,
@@ -1641,6 +1679,8 @@ ILongExposureInfraredFrame._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for ILongExposureInfraredFrame implementation
 ##class ILongExposureInfraredFrame_Impl(object):
@@ -1745,6 +1785,8 @@ IAudioSource._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for IAudioSource implementation
 ##class IAudioSource_Impl(object):
@@ -1935,48 +1977,6 @@ class IStream(ISequentialStream):
     _idlflags_ = []
 
 
-IAudioBeam._methods_ = [
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "AudioSource",
-        (["retval", "out"], POINTER(POINTER(IAudioSource)), "AudioSource"),
-    ),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "AudioBeamMode",
-        (["retval", "out"], POINTER(_AudioBeamMode), "AudioBeamMode"),
-    ),
-    COMMETHOD(
-        ["propput"], HRESULT, "AudioBeamMode", ([], _AudioBeamMode, "AudioBeamMode")
-    ),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "BeamAngle",
-        (["retval", "out"], POINTER(c_float), "BeamAngle"),
-    ),
-    COMMETHOD(["propput"], HRESULT, "BeamAngle", ([], c_float, "BeamAngle")),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "BeamAngleConfidence",
-        (["retval", "out"], POINTER(c_float), "BeamAngleConfidence"),
-    ),
-    COMMETHOD(
-        [],
-        HRESULT,
-        "OpenInputStream",
-        (["retval", "out"], POINTER(POINTER(IStream)), "stream"),
-    ),
-    COMMETHOD(
-        ["propget"],
-        HRESULT,
-        "RelativeTime",
-        (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
-    ),
-]
 ################################################################
 ## code template for IAudioBeam implementation
 ##class IAudioBeam_Impl(object):
@@ -2229,6 +2229,8 @@ IBodyFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IBodyFrameReference implementation
 ##class IBodyFrameReference_Impl(object):
@@ -2302,7 +2304,7 @@ IColorFrame._methods_ = [
         "AccessRawUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ubyte)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         [],
         HRESULT,
@@ -2507,6 +2509,8 @@ IBodyIndexFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IBodyIndexFrameReference implementation
 ##class IBodyIndexFrameReference_Impl(object):
@@ -2625,6 +2629,8 @@ IDepthFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IDepthFrameReference implementation
 ##class IDepthFrameReference_Impl(object):
@@ -2671,7 +2677,7 @@ IBodyIndexFrame._methods_ = [
         "AccessUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ubyte)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         ["propget"],
         HRESULT,
@@ -2776,6 +2782,8 @@ IMultiSourceFrameArrivedEventArgs._methods_ = [
         (["retval", "out"], POINTER(POINTER(IMultiSourceFrameReference)), "frames"),
     ),
 ]
+
+
 ################################################################
 ## code template for IMultiSourceFrameArrivedEventArgs implementation
 ##class IMultiSourceFrameArrivedEventArgs_Impl(object):
@@ -2872,6 +2880,8 @@ ILongExposureInfraredFrameSource._methods_ = [
         (["retval", "out"], POINTER(POINTER(IKinectSensor)), "sensor"),
     ),
 ]
+
+
 ################################################################
 ## code template for ILongExposureInfraredFrameSource implementation
 ##class ILongExposureInfraredFrameSource_Impl(object):
@@ -2976,6 +2986,8 @@ IMultiSourceFrame._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for IMultiSourceFrame implementation
 ##class IMultiSourceFrame_Impl(object):
@@ -3286,6 +3298,8 @@ IAudioBeamList._methods_ = [
         (["out"], POINTER(POINTER(IAudioBeam)), "AudioBeam"),
     ),
 ]
+
+
 ################################################################
 ## code template for IAudioBeamList implementation
 ##class IAudioBeamList_Impl(object):
@@ -3490,6 +3504,8 @@ IInfraredFrameArrivedEventArgs._methods_ = [
         ),
     ),
 ]
+
+
 ################################################################
 ## code template for IInfraredFrameArrivedEventArgs implementation
 ##class IInfraredFrameArrivedEventArgs_Impl(object):
@@ -3563,7 +3579,7 @@ IAudioBeamSubFrame._methods_ = [
         "AccessUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ubyte)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         ["propget"],
         HRESULT,
@@ -3712,6 +3728,8 @@ IInfraredFrameReference._methods_ = [
         (["retval", "out"], POINTER(c_longlong), "RelativeTime"),
     ),
 ]
+
+
 ################################################################
 ## code template for IInfraredFrameReference implementation
 ##class IInfraredFrameReference_Impl(object):
@@ -3977,7 +3995,7 @@ IInfraredFrame._methods_ = [
         "AccessUnderlyingBuffer",
         ([], POINTER(c_uint), "capacity"),
         ([], POINTER(POINTER(c_ushort)), "buffer"),
-    ),  #'out'
+    ),  # 'out'
     COMMETHOD(
         ["propget"],
         HRESULT,
@@ -4301,58 +4319,10 @@ __all__ = [
     "_Activity",
 ]
 
-
 KINECT_SKELETON_COUNT = 6
 
+GetDefaultKinectSensor = windll.Kinect20.GetDefaultKinectSensor
+GetDefaultKinectSensor.argtypes = [POINTER(POINTER(IKinectSensor))]
+GetDefaultKinectSensor.restype = HRESULT
 
-class DefaultKinectSensor:
-    _kinect20 = WinDLL("Kinect20")
-    _GetDefaultKinectSensorProto = _kinect20.GetDefaultKinectSensor
-    _GetDefaultKinectSensorProto.argtypes = [POINTER(POINTER(IKinectSensor))]
-    _GetDefaultKinectSensorProto.restype = HRESULT
-
-
-_kernel32 = WinDLL("kernel32")
-_CreateEvent = _kernel32.CreateEventW
-_CreateEvent.argtypes = [c_void_p, c_uint, c_bool, c_wchar_p]
-_CreateEvent.restype = c_void_p
-
-_CloseHandle = _kernel32.CloseHandle
-_CloseHandle.argtypes = [c_void_p]
-_CloseHandle.restype = c_bool
-
-_WaitForSingleObject = _kernel32.WaitForSingleObject
-_WaitForSingleObject.argtypes = [c_void_p, c_uint32]
-_WaitForSingleObject.restype = c_uint32
-
-_WaitForMultipleObjects = _kernel32.WaitForMultipleObjects
-_WaitForMultipleObjects.argtypes = [
-    c_uint32,
-    POINTER(c_void_p),
-    c_uint,
-    c_uint32,
-]
-_WaitForMultipleObjects.restype = c_uint32
-
-_WAIT_OBJECT_0 = 0
-_WAIT_OBJECT_1 = 1
 _INFINITE = 0xFFFFFFFF
-
-_oleaut32 = WinDLL("oleaut32")
-
-_SysFreeString = _oleaut32.SysFreeString
-_SysFreeString.argtypes = [c_void_p]
-_SysFreeString.restype = HRESULT
-
-
-def HRValue(hr):
-    _hr = HRESULT(hr)
-    return c_ulong(_hr.value).value
-
-
-def IsHR(hr, value):
-    _hr = HRESULT(hr)
-    return c_ulong(_hr.value).value == value
-
-
-__name__ = "PyKinectV2"

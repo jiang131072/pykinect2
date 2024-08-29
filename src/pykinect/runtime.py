@@ -2,10 +2,11 @@ import _thread as thread
 import ctypes
 import sys
 import time
+from _ctypes import COMError
 
 import numpy
-from _ctypes import COMError
-from pykinect.com import (
+
+from pykinect.api import (
     _INFINITE,
     ColorImageFormat_Bgra,
     FrameSourceTypes_Body,
@@ -41,14 +42,6 @@ class PyKinectRuntime(object):
             ctypes.POINTER(ctypes.c_void_p),
             ctypes.POINTER(self.Py_ssize_t),
         ]
-
-        # self._color_frame_ready = _event()
-        # self._depth_frame_ready = _event()
-        # self._body_frame_ready = _event()
-        # self._body_index_frame_ready = _event()
-        # self._infrared_frame_ready = _event()
-        # self._long_exposure_infrared_frame_ready = _event()
-        # self._audio_frame_ready = _event()
 
         self._close_event = ctypes.windll.kernel32.CreateEventW(
             None, False, False, None
@@ -586,7 +579,7 @@ class KinectBodyFrameData(object):
             self.floor_clip_plane = bodyFrame.FloorClipPlane
             self.relative_time = bodyFrame.RelativeTime
 
-            self.bodies = numpy.ndarray((max_body_count), dtype=numpy.object)
+            self.bodies = numpy.ndarray((max_body_count), dtype=object)
             for i in range(0, max_body_count):
                 self.bodies[i] = KinectBody(body_frame_data[i])
 

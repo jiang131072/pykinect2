@@ -3,7 +3,7 @@ import ctypes
 import pygame
 
 # from pykinect.wincom import *
-from pykinect import com, runtime
+from pykinect import api, runtime
 
 # colors for drawing different bodies
 SKELETON_COLORS = [
@@ -42,7 +42,7 @@ class BodyGameRuntime(object):
 
         # Kinect runtime object, we want only color and body frames
         self._kinect = runtime.PyKinectRuntime(
-            com.FrameSourceTypes_Color | com.FrameSourceTypes_Body
+            api.FrameSourceTypes_Color | api.FrameSourceTypes_Body
         )
 
         # back buffer surface for getting Kinect color frames, 32bit color, width and height equal to the Kinect color frame size
@@ -59,14 +59,14 @@ class BodyGameRuntime(object):
         joint0State = joints[joint0].TrackingState
         joint1State = joints[joint1].TrackingState
         # both joints are not tracked
-        if (joint0State == com.TrackingState_NotTracked) or (
-            joint1State == com.TrackingState_NotTracked
+        if (joint0State == api.TrackingState_NotTracked) or (
+            joint1State == api.TrackingState_NotTracked
         ):
             return
 
         # both joints are not *really* tracked
-        if (joint0State == com.TrackingState_Inferred) and (
-            joint1State == com.TrackingState_Inferred
+        if (joint0State == api.TrackingState_Inferred) and (
+            joint1State == api.TrackingState_Inferred
         ):
             return
 
@@ -85,173 +85,173 @@ class BodyGameRuntime(object):
             joints,
             jointPoints,
             color,
-            com.JointType_Head,
-            com.JointType_Neck,
+            api.JointType_Head,
+            api.JointType_Neck,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_Neck,
-            com.JointType_SpineShoulder,
+            api.JointType_Neck,
+            api.JointType_SpineShoulder,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineShoulder,
-            com.JointType_SpineMid,
+            api.JointType_SpineShoulder,
+            api.JointType_SpineMid,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineMid,
-            com.JointType_SpineBase,
+            api.JointType_SpineMid,
+            api.JointType_SpineBase,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineShoulder,
-            com.JointType_ShoulderRight,
+            api.JointType_SpineShoulder,
+            api.JointType_ShoulderRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineShoulder,
-            com.JointType_ShoulderLeft,
+            api.JointType_SpineShoulder,
+            api.JointType_ShoulderLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineBase,
-            com.JointType_HipRight,
+            api.JointType_SpineBase,
+            api.JointType_HipRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_SpineBase,
-            com.JointType_HipLeft,
+            api.JointType_SpineBase,
+            api.JointType_HipLeft,
         )
         # Right Arm
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_ShoulderRight,
-            com.JointType_ElbowRight,
+            api.JointType_ShoulderRight,
+            api.JointType_ElbowRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_ElbowRight,
-            com.JointType_WristRight,
+            api.JointType_ElbowRight,
+            api.JointType_WristRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_WristRight,
-            com.JointType_HandRight,
+            api.JointType_WristRight,
+            api.JointType_HandRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_HandRight,
-            com.JointType_HandTipRight,
+            api.JointType_HandRight,
+            api.JointType_HandTipRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_WristRight,
-            com.JointType_ThumbRight,
+            api.JointType_WristRight,
+            api.JointType_ThumbRight,
         )
         # Left Arm
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_ShoulderLeft,
-            com.JointType_ElbowLeft,
+            api.JointType_ShoulderLeft,
+            api.JointType_ElbowLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_ElbowLeft,
-            com.JointType_WristLeft,
+            api.JointType_ElbowLeft,
+            api.JointType_WristLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_WristLeft,
-            com.JointType_HandLeft,
+            api.JointType_WristLeft,
+            api.JointType_HandLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_HandLeft,
-            com.JointType_HandTipLeft,
+            api.JointType_HandLeft,
+            api.JointType_HandTipLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_WristLeft,
-            com.JointType_ThumbLeft,
+            api.JointType_WristLeft,
+            api.JointType_ThumbLeft,
         )
         # Right Leg
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_HipRight,
-            com.JointType_KneeRight,
+            api.JointType_HipRight,
+            api.JointType_KneeRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_KneeRight,
-            com.JointType_AnkleRight,
+            api.JointType_KneeRight,
+            api.JointType_AnkleRight,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_AnkleRight,
-            com.JointType_FootRight,
+            api.JointType_AnkleRight,
+            api.JointType_FootRight,
         )
         # Left Leg
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_HipLeft,
-            com.JointType_KneeLeft,
+            api.JointType_HipLeft,
+            api.JointType_KneeLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_KneeLeft,
-            com.JointType_AnkleLeft,
+            api.JointType_KneeLeft,
+            api.JointType_AnkleLeft,
         )
         self.draw_body_bone(
             joints,
             jointPoints,
             color,
-            com.JointType_AnkleLeft,
-            com.JointType_FootLeft,
+            api.JointType_AnkleLeft,
+            api.JointType_FootLeft,
         )
 
     def draw_color_frame(self, frame, target_surface):
