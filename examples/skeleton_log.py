@@ -2,8 +2,8 @@ import csv
 
 import pygame
 
-from pykinect import api, runtime
-from pykinect.api import *
+from pykinect2 import api, runtime
+from pykinect2.api import *
 
 # 初始化Pygame
 pygame.init()

@@ -7,9 +7,9 @@ authors = [
     { name = "Meson Jiang", email = "jiang131072@gmail.com" },
 ]
 dependencies = [
-    "numpy>=2.1.0",
-    "comtypes>=1.4.6",
-    "pygame>=2.6.0",
+    "numpy",
+    "comtypes",
+    "pygame>=2.0.0",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

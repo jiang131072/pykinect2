@@ -2,8 +2,7 @@ import ctypes
 
 import pygame
 
-# from pykinect.wincom import *
-from pykinect import api, runtime
+from pykinect2 import api, runtime
 
 # colors for drawing different bodies
 SKELETON_COLORS = [
